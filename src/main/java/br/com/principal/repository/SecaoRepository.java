@@ -10,5 +10,10 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface SecaoRepository extends JpaRepository<Secao, Long> {
+    
+    @Override
+    Secao save(Secao secao);
+    
+    Secao findByCodigo(Integer codigo);
 
 }

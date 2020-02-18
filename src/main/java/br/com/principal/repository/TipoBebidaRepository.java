@@ -11,4 +11,8 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface TipoBebidaRepository extends JpaRepository<TipoBebida, Long> {
 
+    @Override
+    TipoBebida save(TipoBebida tipoBebida);
+    
+    TipoBebida findByTipo (String tipoBebida);
 }
