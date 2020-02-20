@@ -16,7 +16,7 @@ public class StarterApplication {
     public static void main(String[] args) {
         context = SpringApplication.run(StarterApplication.class, args);
 
-        SpringApplication.run(StarterApplication.class, args);
+       // SpringApplication.run(StarterApplication.class, args);
     }
 
     public static ApplicationContext getContext() {

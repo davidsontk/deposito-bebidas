@@ -45,6 +45,9 @@ public class Historico implements Serializable {
     @Column(name = "tipo")
     private String tipo;
 
+    @Column(name = "quantidade_litros")
+    private Integer quantidadeLitros;
+
     public Integer getId() {
         return id;
     }
@@ -91,6 +94,14 @@ public class Historico implements Serializable {
 
     public void setTipo(String tipo) {
         this.tipo = tipo;
+    }
+
+    public Integer getQuantidadeLitros() {
+        return quantidadeLitros;
+    }
+
+    public void setQuantidadeLitros(Integer quantidadeLitros) {
+        this.quantidadeLitros = quantidadeLitros;
     }
 
 }
