@@ -1,6 +1,7 @@
 package br.com.principal.service;
 
 import br.com.principal.dto.CadastroBebidaDTO;
+import br.com.principal.dto.TotalEstoqueDTO;
 import br.com.principal.model.Bebida;
 import br.com.principal.model.Historico;
 import br.com.principal.model.Secao;
@@ -12,6 +13,7 @@ import br.com.principal.repository.TipoBebidaRepository;
 import br.com.principal.utils.MensagemHistorico;
 import br.com.principal.utils.MensagemResposta;
 import br.com.principal.utils.enums.TipoBebidaEnum;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,19 +26,19 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class BebidaService {
-
+    
     @Autowired
     private BebidaRepository bebidaRepository;
-
+    
     @Autowired
     private TipoBebidaRepository tipoBebidaRepository;
-
+    
     @Autowired
     private SecaoRepository secaoRepository;
-
+    
     @Autowired
     private HistoricoRepository historicoRepository;
-
+    
     public MensagemResposta cadastrarBebida(CadastroBebidaDTO cadastroBebidaDTO) {
         TipoBebida tipoBebidaSelecionada;
         Secao secao;
@@ -49,25 +51,25 @@ public class BebidaService {
         } else {
             tipoBebidaSelecionada = tipoBebidaRepository.findByTipo(TipoBebidaEnum.ALCOOLICA.name());
         }
-
+        
         secao = secaoRepository.findByCodigo(cadastroBebidaDTO.getCodigoSecao());
-
+        
         if (secao == null) {
             mensagemResposta.setHttpStatus(HttpStatus.EXPECTATION_FAILED);
             mensagemResposta.setMensagem("Código seção" + cadastroBebidaDTO.getCodigoSecao() + " não encontrado ");
             mensagemResposta.setStatusRequisicao(false);
-
+            
             return mensagemResposta;
         }
-
+        
         if (secao.getTipoBebidaId() == null || secao.getTipoBebidaId().getTipo().equals(tipoBebidaSelecionada.getTipo())) {
-
+            
             List<Bebida> listaBebidas = bebidaRepository.findBySecaoId(secao);
-
+            
             for (Bebida bebida : listaBebidas) {
                 quantidadeTotalSecao += bebida.getQuantidadeLitros();
             }
-
+            
             if (cadastroBebidaDTO.getQuantidadeLitros() <= tipoBebidaSelecionada.getQuantidadeLitros()) {
                 Integer quantidadeLitrosAux = cadastroBebidaDTO.getQuantidadeLitros() + quantidadeTotalSecao;
                 if (quantidadeLitrosAux <= tipoBebidaSelecionada.getQuantidadeLitros()) {
@@ -76,13 +78,13 @@ public class BebidaService {
                     bebida.setSecaoId(secao);
                     bebida.setTipoBebidaId(tipoBebidaSelecionada);
                     bebidaRepository.save(bebida);
-
+                    
                     secao.setTipoBebidaId(tipoBebidaSelecionada);
-
+                    
                     secaoRepository.save(secao);
-
+                    
                     this.salvarHistorico(tipoBebidaSelecionada, secao, cadastroBebidaDTO.getNomeResponsavel(), cadastroBebidaDTO.getQuantidadeLitros(), MensagemHistorico.CADASTRO_BEBIDA);
-
+                    
                     mensagemResposta.setHttpStatus(HttpStatus.OK);
                     mensagemResposta.setMensagem("Bebida Cadastrada");
                     mensagemResposta.setStatusRequisicao(true);
@@ -91,22 +93,22 @@ public class BebidaService {
                     mensagemResposta.setHttpStatus(HttpStatus.OK);
                     mensagemResposta.setMensagem("Quantidade Invalida na seção: " + cadastroBebidaDTO.getCodigoSecao() + ". Quantidade em estoque " + quantidadeTotalSecao);
                     mensagemResposta.setStatusRequisicao(false);
-
+                    
                     return mensagemResposta;
                 }
-
+                
             } else {
                 mensagemResposta.setHttpStatus(HttpStatus.EXPECTATION_FAILED);
                 mensagemResposta.setMensagem("Quantidade Invalida na seção: " + cadastroBebidaDTO.getCodigoSecao() + ". Quantidade em estoque " + quantidadeTotalSecao);
                 mensagemResposta.setStatusRequisicao(false);
-
+                
                 return mensagemResposta;
             }
         } else {
             mensagemResposta.setHttpStatus(HttpStatus.BAD_REQUEST);
             mensagemResposta.setMensagem("Seção: " + cadastroBebidaDTO.getCodigoSecao() + " aceita apenas bebidas do tipo " + tipoBebidaSelecionada.getTipo());
             mensagemResposta.setStatusRequisicao(false);
-
+            
             return mensagemResposta;
         }
     }
@@ -120,8 +122,32 @@ public class BebidaService {
         historico.setQuantidadeLitros(quantidadesLitros);
         historico.setTipoBebidaId(tipoBebida);
         historico.setTipo(tipo);
-            
+        
         historicoRepository.save(historico);
     }
 
+    //busca total estoques
+    public List<TotalEstoqueDTO> buscarTotalEstoque() {
+        List<Bebida> bebidas = bebidaRepository.findAll();
+        List<TipoBebida> tipoBebidas = tipoBebidaRepository.findAll();
+        List<TotalEstoqueDTO> totalListEstoqueDTO = new ArrayList<TotalEstoqueDTO>();
+        
+        for (TipoBebida tipoBebida : tipoBebidas) {
+            TotalEstoqueDTO total = new TotalEstoqueDTO();
+            total.setTipoBebida(tipoBebida.getTipo());
+            
+            totalListEstoqueDTO.add(total);
+        }
+        
+        for (Bebida bebida : bebidas) {
+            for (TotalEstoqueDTO estoque : totalListEstoqueDTO) {
+                if (bebida.getTipoBebidaId().getTipo().equals(estoque.getTipoBebida())) {
+                    estoque.setTotal(estoque.getTotal() + bebida.getQuantidadeLitros());
+                }
+            }
+        }
+        
+        return totalListEstoqueDTO;
+    }
+    
 }

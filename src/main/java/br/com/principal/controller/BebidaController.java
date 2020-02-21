@@ -3,6 +3,7 @@ package br.com.principal.controller;
 import br.com.principal.StarterApplication;
 import br.com.principal.dto.CadastroBebidaDTO;
 import br.com.principal.dto.SecaoReduzidaDTO;
+import br.com.principal.dto.TotalEstoqueDTO;
 
 import br.com.principal.repository.BebidaRepository;
 import br.com.principal.repository.SecaoRepository;
@@ -14,7 +15,6 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,15 +27,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/bebidas/")
 public class BebidaController {
-
-    @Autowired
-    private BebidaRepository bebidaRepository;
-
-    @Autowired
-    private TipoBebidaRepository tipoBebidaRepository;
-
-    @Autowired
-    private SecaoRepository secaoRepository;
 
     @PostMapping("cadastrar_bebida")
     public MensagemResposta cadastrarBebidas(@RequestBody CadastroBebidaDTO cadastroBebida) {
@@ -53,4 +44,11 @@ public class BebidaController {
         return secaoService.buscarSecoes();
     }
 
+    @GetMapping("quantidade_total_bebidas")
+    public List<TotalEstoqueDTO> buscarEstoqueTotalPorBebida(){
+        ApplicationContext ctx = StarterApplication.getContext();
+        BebidaService bebidaService = ctx.getBean(BebidaService.class);
+        
+        return bebidaService.buscarTotalEstoque();
+    } 
 }
