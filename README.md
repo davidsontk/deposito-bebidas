@@ -17,3 +17,6 @@ Desafio proposto pela Mil Tec Tecnologia.
 
 ###Endpoints 
     https://www.getpostman.com/collections/12a49a424d17a11d6579
+    
+###SCHEMA BANCO
+    O esquema do banco se encontra dentro do projeto.
