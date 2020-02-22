@@ -18,7 +18,7 @@ public interface SecaoRepository extends JpaRepository<Secao, Long> {
     Secao save(Secao secao);
 
     Secao findByCodigo(Integer codigo);
-
+    
     @Query("SELECT new br.com.principal.dto.SecaoReduzidaDTO(secao) "
             + " FROM Secao secao "
             + " ORDER BY secao.codigo")
