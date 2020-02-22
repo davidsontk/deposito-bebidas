@@ -1,6 +1,7 @@
 package br.com.principal.service;
 
 import br.com.principal.dto.SecaoDisponivelArmazenamentoDTO;
+import br.com.principal.dto.SecaoDisponivelVendaDTO;
 import br.com.principal.dto.SecaoReduzidaDTO;
 import br.com.principal.model.Bebida;
 import br.com.principal.model.Secao;
@@ -44,17 +45,23 @@ public class SecaoService {
         for (Secao secao : secoes) {
             SecaoDisponivelArmazenamentoDTO secaoDisponivel = new SecaoDisponivelArmazenamentoDTO();
             Integer totalLitrosSecao = 0;
-            List<Bebida> bebidas = bebidaRepository.findBySecaoId(secao);
+            Bebida bebida = bebidaRepository.findBySecaoId(secao);
+            if (bebida != null) {
+                totalLitrosSecao = bebida.getQuantidadeLitros();
 
-            for (Bebida bebida : bebidas) {
-                totalLitrosSecao += bebida.getQuantidadeLitros();
+                secaoDisponivel.setCodigoSecao(secao.getCodigo());
+                secaoDisponivel.setQuantidadeDisponivelArmazenamento(totalLitrosSecao);
+                secaoDisponivel.setTipoBebida(secao.getTipoBebidaId() != null ? secao.getTipoBebidaId().getTipo() : "Nenhuma bebida cadastrada");
+
+                listaSecoes.add(secaoDisponivel);
+            } else {
+
+                secaoDisponivel.setCodigoSecao(secao.getCodigo());
+                secaoDisponivel.setQuantidadeDisponivelArmazenamento(null);
+                secaoDisponivel.setTipoBebida("Nenhuma bebida cadastrada. Seção disponível");
+
+                listaSecoes.add(secaoDisponivel);
             }
-
-            secaoDisponivel.setCodigoSecao(secao.getCodigo());
-            secaoDisponivel.setQuantidadeDisponivelArmazenamento(totalLitrosSecao);
-            secaoDisponivel.setTipoBebida(secao.getTipoBebidaId() != null ? secao.getTipoBebidaId().getTipo() : "Nenhuma bebida cadastrada");
-
-            listaSecoes.add(secaoDisponivel);
 
         }
 
@@ -71,22 +78,22 @@ public class SecaoService {
 
     }
 
-    public List<SecaoDisponivelArmazenamentoDTO> buscarSecoesDisponiveisVenda() {
-        List<SecaoDisponivelArmazenamentoDTO> listaSecoes = new ArrayList<SecaoDisponivelArmazenamentoDTO>();
+    public List<SecaoDisponivelVendaDTO> buscarSecoesDisponiveisVenda() {
+        List<SecaoDisponivelVendaDTO> listaSecoes = new ArrayList<SecaoDisponivelVendaDTO>();
         List<Secao> secoes = secaoRepository.findAll();
         List<TipoBebida> tipoBebidaList = tipoBebidaRepository.findAll();
         for (Secao secao : secoes) {
-            SecaoDisponivelArmazenamentoDTO secaoDisponivel = new SecaoDisponivelArmazenamentoDTO();
+            SecaoDisponivelVendaDTO secaoDisponivel = new SecaoDisponivelVendaDTO();
             Integer totalLitrosSecao = 0;
-            List<Bebida> bebidas = bebidaRepository.findBySecaoId(secao);
+            Bebida bebida = bebidaRepository.findBySecaoId(secao);
 
-            for (Bebida bebida : bebidas) {
-                totalLitrosSecao += bebida.getQuantidadeLitros();
+            if (bebida != null) {
+                totalLitrosSecao = bebida.getQuantidadeLitros();
+
+                secaoDisponivel.setCodigoSecao(secao.getCodigo());
+                secaoDisponivel.setQuantidadeDisponivelVenda(totalLitrosSecao);
+                secaoDisponivel.setTipoBebida(secao.getTipoBebidaId() != null ? secao.getTipoBebidaId().getTipo() : "Nenhuma bebida cadastrada");
             }
-
-            secaoDisponivel.setCodigoSecao(secao.getCodigo());
-            secaoDisponivel.setQuantidadeDisponivelArmazenamento(totalLitrosSecao);
-            secaoDisponivel.setTipoBebida(secao.getTipoBebidaId() != null ? secao.getTipoBebidaId().getTipo() : "Nenhuma bebida cadastrada");
 
             if (totalLitrosSecao != 0) {
                 listaSecoes.add(secaoDisponivel);
@@ -94,11 +101,11 @@ public class SecaoService {
 
         }
 
-        for (SecaoDisponivelArmazenamentoDTO secao : listaSecoes) {
+        for (SecaoDisponivelVendaDTO secao : listaSecoes) {
 
             for (TipoBebida tipoBebida : tipoBebidaList) {
                 if (tipoBebida.getTipo().equals(secao.getTipoBebida())) {
-                    secao.setQuantidadeDisponivelArmazenamento(tipoBebida.getQuantidadeLitros() - secao.getQuantidadeDisponivelArmazenamento());
+                    secao.setQuantidadeDisponivelVenda(secao.getQuantidadeDisponivelVenda());
                 }
             }
         }

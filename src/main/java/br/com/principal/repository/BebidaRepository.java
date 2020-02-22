@@ -18,7 +18,7 @@ public interface BebidaRepository extends JpaRepository<Bebida, Long> {
     @Override
     Bebida save(Bebida bebida);
 
-    List<Bebida> findBySecaoId(Secao secaoId);
+    Bebida findBySecaoId(Secao secaoId);
     
     Bebida findBySecaoIdAndTipoBebidaId(Secao secaoId, TipoBebida tipoBebida);
 

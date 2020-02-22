@@ -52,6 +52,8 @@ public class BebidaService {
         if (tipoBebidaSelecionada == null) {
             mensagemResposta.setMensagem("Tipo Bebida " + cadastroBebidaDTO.getCodigoSecao() + " não encontrado ");
             mensagemResposta.setStatusRequisicao(false);
+
+            return mensagemResposta;
         }
 
         secao = secaoRepository.findByCodigo(cadastroBebidaDTO.getCodigoSecao());
@@ -65,20 +67,26 @@ public class BebidaService {
 
         if (secao.getTipoBebidaId() == null || secao.getTipoBebidaId().getTipo().equals(tipoBebidaSelecionada.getTipo())) {
 
-            List<Bebida> listaBebidas = bebidaRepository.findBySecaoId(secao);
+            Bebida b = bebidaRepository.findBySecaoId(secao);
 
-            for (Bebida bebida : listaBebidas) {
-                quantidadeTotalSecao += bebida.getQuantidadeLitros();
+            if (b != null) {
+                quantidadeTotalSecao = b.getQuantidadeLitros();
+
             }
-
             if (cadastroBebidaDTO.getQuantidadeLitros() <= tipoBebidaSelecionada.getQuantidadeLitros()) {
                 Integer quantidadeLitrosAux = cadastroBebidaDTO.getQuantidadeLitros() + quantidadeTotalSecao;
                 if (quantidadeLitrosAux <= tipoBebidaSelecionada.getQuantidadeLitros()) {
-                    Bebida bebida = new Bebida();
-                    bebida.setQuantidadeLitros(cadastroBebidaDTO.getQuantidadeLitros());
-                    bebida.setSecaoId(secao);
-                    bebida.setTipoBebidaId(tipoBebidaSelecionada);
-                    bebidaRepository.save(bebida);
+
+                    if (b == null) {
+                        Bebida bebida = new Bebida();
+                        bebida.setQuantidadeLitros(cadastroBebidaDTO.getQuantidadeLitros() + quantidadeTotalSecao);
+                        bebida.setSecaoId(secao);
+                        bebida.setTipoBebidaId(tipoBebidaSelecionada);
+                        bebidaRepository.save(bebida);
+                    } else {
+                        b.setQuantidadeLitros(cadastroBebidaDTO.getQuantidadeLitros() + quantidadeTotalSecao);
+                        bebidaRepository.save(b);
+                    }
 
                     secao.setTipoBebidaId(tipoBebidaSelecionada);
 
@@ -102,12 +110,11 @@ public class BebidaService {
 
                 return mensagemResposta;
             }
-        } else {
-            mensagemResposta.setMensagem("Seção: " + cadastroBebidaDTO.getCodigoSecao() + " aceita apenas bebidas do tipo " + tipoBebidaSelecionada.getTipo());
-            mensagemResposta.setStatusRequisicao(false);
-
-            return mensagemResposta;
         }
+        mensagemResposta.setMensagem("Seção: " + cadastroBebidaDTO.getCodigoSecao() + " aceita apenas bebidas do tipo " + tipoBebidaSelecionada.getTipo());
+        mensagemResposta.setStatusRequisicao(false);
+
+        return mensagemResposta;
     }
 
     //SALVANDO NO HISTORICO A ENTRADA E SAIDA DE BEBIDAS DO ESTOQUE

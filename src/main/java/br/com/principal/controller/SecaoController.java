@@ -2,6 +2,7 @@ package br.com.principal.controller;
 
 import br.com.principal.StarterApplication;
 import br.com.principal.dto.SecaoDisponivelArmazenamentoDTO;
+import br.com.principal.dto.SecaoDisponivelVendaDTO;
 import br.com.principal.service.SecaoService;
 import java.util.List;
 import org.springframework.context.ApplicationContext;
@@ -28,7 +29,7 @@ public class SecaoController {
     
     //Consulta das seções disponíveis para venda de determinado tipo de bebida 
     @GetMapping("disponivel_venda")
-    public List<SecaoDisponivelArmazenamentoDTO> buscarSecoesDisponiveisParaVenda() {
+    public List<SecaoDisponivelVendaDTO> buscarSecoesDisponiveisParaVenda() {
         ApplicationContext ctx = StarterApplication.getContext();
         SecaoService secaoService = ctx.getBean(SecaoService.class);
         

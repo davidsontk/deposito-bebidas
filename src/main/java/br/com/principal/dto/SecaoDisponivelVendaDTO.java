@@ -4,7 +4,7 @@ package br.com.principal.dto;
  *
  * @author david
  */
-public class SecaoDisponivelVenda {
+public class SecaoDisponivelVendaDTO {
 
     private Integer codigoSecao;
     private String tipoBebida;
