@@ -14,3 +14,6 @@ Desafio proposto pela Mil Tec Tecnologia.
     A princípio pensei na modelagem e decidi inserir um novo registro no banco a cadastro no banco. Com o decorrer do tempo vi que iria ficar trabalhoso no momento da venda das bebidas então optei em salvar apenas em uma linha.
     Cada registro novo e venda, é inserido no histórico para relatórios. 
 
+
+###Endpoints 
+    https://www.getpostman.com/collections/12a49a424d17a11d6579
