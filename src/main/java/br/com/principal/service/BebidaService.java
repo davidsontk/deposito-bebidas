@@ -50,7 +50,6 @@ public class BebidaService {
         tipoBebidaSelecionada = tipoBebidaRepository.findByTipo(cadastroBebidaDTO.getTipoBebida());
 
         if (tipoBebidaSelecionada == null) {
-            mensagemResposta.setHttpStatus(HttpStatus.EXPECTATION_FAILED);
             mensagemResposta.setMensagem("Tipo Bebida " + cadastroBebidaDTO.getCodigoSecao() + " não encontrado ");
             mensagemResposta.setStatusRequisicao(false);
         }
@@ -58,7 +57,6 @@ public class BebidaService {
         secao = secaoRepository.findByCodigo(cadastroBebidaDTO.getCodigoSecao());
 
         if (secao == null) {
-            mensagemResposta.setHttpStatus(HttpStatus.EXPECTATION_FAILED);
             mensagemResposta.setMensagem("Código seção" + cadastroBebidaDTO.getCodigoSecao() + " não encontrado ");
             mensagemResposta.setStatusRequisicao(false);
 
@@ -88,12 +86,10 @@ public class BebidaService {
 
                     this.salvarHistorico(tipoBebidaSelecionada, secao, cadastroBebidaDTO.getNomeResponsavel(), cadastroBebidaDTO.getQuantidadeLitros(), MensagemHistorico.CADASTRO_BEBIDA);
 
-                    mensagemResposta.setHttpStatus(HttpStatus.OK);
                     mensagemResposta.setMensagem("Bebida Cadastrada");
                     mensagemResposta.setStatusRequisicao(true);
                     return mensagemResposta;
                 } else {
-                    mensagemResposta.setHttpStatus(HttpStatus.OK);
                     mensagemResposta.setMensagem("Quantidade Invalida na seção: " + cadastroBebidaDTO.getCodigoSecao() + ". Quantidade em estoque " + quantidadeTotalSecao);
                     mensagemResposta.setStatusRequisicao(false);
 
@@ -101,14 +97,12 @@ public class BebidaService {
                 }
 
             } else {
-                mensagemResposta.setHttpStatus(HttpStatus.EXPECTATION_FAILED);
                 mensagemResposta.setMensagem("Quantidade Invalida na seção: " + cadastroBebidaDTO.getCodigoSecao() + ". Quantidade em estoque " + quantidadeTotalSecao);
                 mensagemResposta.setStatusRequisicao(false);
 
                 return mensagemResposta;
             }
         } else {
-            mensagemResposta.setHttpStatus(HttpStatus.BAD_REQUEST);
             mensagemResposta.setMensagem("Seção: " + cadastroBebidaDTO.getCodigoSecao() + " aceita apenas bebidas do tipo " + tipoBebidaSelecionada.getTipo());
             mensagemResposta.setStatusRequisicao(false);
 

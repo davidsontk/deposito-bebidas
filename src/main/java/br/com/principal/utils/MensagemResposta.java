@@ -10,7 +10,6 @@ public class MensagemResposta {
 
     private String mensagem;
     private boolean statusRequisicao;
-    private HttpStatus httpStatus;
 
     public String getMensagem() {
         return mensagem;
@@ -27,13 +26,5 @@ public class MensagemResposta {
     public void setStatusRequisicao(boolean statusRequisicao) {
         this.statusRequisicao = statusRequisicao;
     }
-
-    public HttpStatus getHttpStatus() {
-        return httpStatus;
-    }
-
-    public void setHttpStatus(HttpStatus httpStatus) {
-        this.httpStatus = httpStatus;
-    }   
    
 }
