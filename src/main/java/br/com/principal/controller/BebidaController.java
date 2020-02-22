@@ -53,11 +53,11 @@ public class BebidaController {
 
     //Venda bebida
     @PostMapping("venda_bebida")
-    public void vendaBebida(@RequestBody VendaDTO venda) {
+    public MensagemResposta vendaBebida(@RequestBody VendaDTO venda) {
         ApplicationContext ctx = StarterApplication.getContext();
         BebidaService bebidaService = ctx.getBean(BebidaService.class);
-        
-        bebidaService.registrarVenda(venda);
+
+        return bebidaService.registrarVenda(venda);
     }
 
 }

@@ -155,22 +155,66 @@ public class BebidaService {
         return totalListEstoqueDTO;
     }
 
-    public void registrarVenda(VendaDTO venda) {
+    public MensagemResposta registrarVenda(VendaDTO venda) {
+        MensagemResposta mensagemResposta = new MensagemResposta();
+
         try {
-            Secao secao = secaoRepository.findByCodigo(venda.codigoSecao);
+            Secao secao = secaoRepository.findByCodigo(venda.getCodigoSecao());
             if (secao == null) {
                 //secao nao encontrada
+                mensagemResposta.setMensagem("Seção não encontrada");
+                mensagemResposta.setStatusRequisicao(false);
+
+                return mensagemResposta;
             }
-//            Integer quantidadeLitrosSecao = bebidaRepository.buscarQuantidadeLitrosSecao(secao.getCodigo());
-//;
-//            if (venda.quantidade <= quantidadeLitrosSecao) {
-//
-//            }
+
+            if (!secao.getTipoBebidaId().getTipo().equals(venda.getTipoBebida())) {
+                mensagemResposta.setMensagem("Tipo de bebida não se encontra nessa seção");
+                mensagemResposta.setStatusRequisicao(false);
+
+                return mensagemResposta;
+            }
+
+            Bebida bebida = bebidaRepository.findBySecaoId(secao);
+            if (bebida != null) {
+                if (bebida.getQuantidadeLitros() >= venda.getQuantidade()) {
+                    bebida.setQuantidadeLitros(bebida.getQuantidadeLitros() - venda.getQuantidade());
+
+                    if (bebida.getQuantidadeLitros() == 0) {
+                        secao.setTipoBebidaId(null);
+                        bebidaRepository.delete(bebida);
+                        secaoRepository.save(secao);
+                    } else {
+                        bebidaRepository.save(bebida);
+                    }
+
+                    this.salvarHistorico(bebida.getTipoBebidaId(), secao, venda.getResponsavel(), venda.getQuantidade(), MensagemHistorico.VENDA_BEBIDA);
+
+                    mensagemResposta.setMensagem("Venda realizada com sucesso!");
+                    mensagemResposta.setStatusRequisicao(true);
+
+                    return mensagemResposta;
+
+                } else {
+                    mensagemResposta.setMensagem("Quantidade indisponível na seção: " + bebida.getSecaoId().getCodigo());
+                    mensagemResposta.setStatusRequisicao(false);
+
+                    return mensagemResposta;
+                }
+            } else {
+                mensagemResposta.setMensagem("Seção vazia");
+                mensagemResposta.setStatusRequisicao(false);
+
+                return mensagemResposta;
+            }
 
         } catch (Exception e) {
+            mensagemResposta.setMensagem("Erro ao realizar venda");
+            mensagemResposta.setStatusRequisicao(false);
+            e.printStackTrace();
 
+            return mensagemResposta;
         }
-
     }
 
 }
